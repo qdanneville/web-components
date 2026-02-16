@@ -77,12 +77,11 @@ class UIButton extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-
-        this.name = this.getAttribute('name');
     }
 
     connectedCallback() {
         this.render();
+        this.addEventListenerToButton();
     }
 
     render() {
@@ -100,11 +99,32 @@ class UIButton extends HTMLElement {
 
         <button>Voir le profil</button>
         `;
+    }
 
+    addEventListenerToButton() {
+        const name = this.getAttribute('name');
         this.shadowRoot.querySelector('button').addEventListener('click', () => {
-            alert(`Bonjour ${this.name}`);
+            console.log('button voir le profil clicked');
+            // alert(`Bonjour ${name}`);
+
+            const event = new CustomEvent("userSelected", {
+                detail: {
+                    name: this.getAttribute("name"),
+                    email: this.getAttribute("email")
+                },
+                bubbles: true,     // important pour que l'événement remonte
+                composed: true     // utile plus tard avec Shadow DOM
+            });
+
+            // Dispatch de l'événement
+            this.dispatchEvent(event);
         });
     }
 }
 
 customElements.define("ui-button", UIButton);
+
+document.addEventListener("userSelected", (event) => {
+    console.log("Utilisateur sélectionné :", event.detail);
+    alert("Utilisateur sélectionné : " + event.detail.name);
+});
