@@ -56,7 +56,7 @@ class UICard extends HTMLElement {
                   <p><strong>Email : </strong>${email}</p>
               </article>
               <footer>
-                  <ui-button name="${lastname + ' ' + firstname}"></ui-button>
+                  <ui-button name="${lastname + ' ' + firstname}" firstname="${firstname}" lastname="${lastname}" email="${email}"></ui-button>
                   <button>Mettre à jour le profil</button>
               </footer>
         </div>
@@ -102,14 +102,13 @@ class UIButton extends HTMLElement {
     }
 
     addEventListenerToButton() {
-        const name = this.getAttribute('name');
         this.shadowRoot.querySelector('button').addEventListener('click', () => {
             console.log('button voir le profil clicked');
-            // alert(`Bonjour ${name}`);
 
             const event = new CustomEvent("userSelected", {
                 detail: {
-                    name: this.getAttribute("name"),
+                    firstname: this.getAttribute("firstname"),
+                    lastname: this.getAttribute("lastname"),
                     email: this.getAttribute("email")
                 },
                 bubbles: true,     // important pour que l'événement remonte
@@ -122,9 +121,67 @@ class UIButton extends HTMLElement {
     }
 }
 
+class UIAddUserButton extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+    }
+
+    connectedCallback() {
+        this.render();
+        this.addEventListenerToButton();
+    }
+
+    render() {
+        this.shadowRoot.innerHTML = `
+        <style>
+            button {
+                background-color: #007bff;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+        </style>
+
+        <button>Ajouter un utilisateur</button>
+        `;
+    }
+
+    addEventListenerToButton() {
+        this.shadowRoot.querySelector('button').addEventListener('click', () => {
+            console.log('button ajouter un utilisateur clicked');
+
+            const event = new CustomEvent("addUser", {
+                detail: {
+                    firstname: "John",
+                    lastname: "Doe",
+                    email: "john.doe@gmail.com"
+                },
+                bubbles: true,     // important pour que l'événement remonte
+                composed: true     // utile plus tard avec Shadow DOM
+            });
+
+            // Dispatch de l'événement
+            this.dispatchEvent(event);
+        });
+    }
+}
+
 customElements.define("ui-button", UIButton);
+customElements.define("ui-add-user-button", UIAddUserButton);
 
 document.addEventListener("userSelected", (event) => {
     console.log("Utilisateur sélectionné :", event.detail);
-    alert("Utilisateur sélectionné : " + event.detail.name);
+    alert("Utilisateur sélectionné : " + event.detail.firstname + " " + event.detail.lastname);
+});
+
+document.addEventListener("addUser", (event) => {
+    console.log("Ajout d'un utilisateur :", event.detail);
+    const newCard = document.createElement('ui-card');
+    newCard.setAttribute('firstname', event.detail.firstname);
+    newCard.setAttribute('lastname', event.detail.lastname);
+    newCard.setAttribute('email', event.detail.email);
+    document.querySelector('main').appendChild(newCard);
 });
