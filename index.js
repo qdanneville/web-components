@@ -1,19 +1,30 @@
 class UICard extends HTMLElement {
+
+    static get observedAttributes() {
+        return ['firstname', 'lastname', 'email'];
+    }
+
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-
-        this.firstname = this.getAttribute('firstname');
-        this.lastname = this.getAttribute('lastname');
-        this.email = this.getAttribute('email');
-
     }
 
     connectedCallback() {
         this.render();
     }
 
+    attributeChangedCallback(name, oldValue, newValue) {
+        console.log(`Attribute ${name} has changed. New value : ${newValue}, Old value : ${oldValue}`);
+        this.render();
+    }
+
     render() {
+
+        const firstname = this.getAttribute('firstname');
+        const lastname = this.getAttribute('lastname');
+        const email = this.getAttribute('email');
+
+
         this.shadowRoot.innerHTML = `
         <style>
           div {
@@ -40,15 +51,23 @@ class UICard extends HTMLElement {
                   <img src="https://images4.fanpop.com/image/photos/17000000/Anakin-Skywalker-anakin-skywalker-17028586-992-960.jpg" />
               </header>
               <article>
-                  <p><strong>Nom : </strong>${this.lastname}</p>
-                  <p><strong>Prénom : </strong>${this.firstname}</p>
-                  <p><strong>Email : </strong>${this.email}</p>
+                  <p><strong>Nom : </strong>${lastname}</p>
+                  <p><strong>Prénom : </strong>${firstname}</p>
+                  <p><strong>Email : </strong>${email}</p>
               </article>
               <footer>
-                  <ui-button name="${this.lastname + ' ' + this.firstname}"></ui-button>
+                  <ui-button name="${lastname + ' ' + firstname}"></ui-button>
+                  <button>Mettre à jour le profil</button>
               </footer>
         </div>
       `;
+
+        this.shadowRoot.querySelector('button').addEventListener('click', () => {
+            console.log('Mettre à jour le profil');
+            this.setAttribute('firstname', 'John');
+            this.setAttribute('lastname', 'Doe');
+            this.setAttribute('email', 'john.doe@gmail.com');
+        });
     }
 }
 
