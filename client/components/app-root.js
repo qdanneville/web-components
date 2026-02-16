@@ -1,5 +1,6 @@
 import { fetchUsers, createUser } from "../services/api.js";
 import "./user-list.js";
+import "./user-selected.js";
 
 class AppRoot extends HTMLElement {
 
@@ -35,6 +36,7 @@ class AppRoot extends HTMLElement {
             </form>
 
             <user-list></user-list>
+            <user-selected></user-selected>
         `;
 
         this.userList = this.shadowRoot.querySelector("user-list");

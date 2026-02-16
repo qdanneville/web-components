@@ -1,3 +1,5 @@
+import "./use-card-button.js";
+
 class UserCard extends HTMLElement {
 
   constructor() {
@@ -13,6 +15,7 @@ class UserCard extends HTMLElement {
   }
 
   render() {
+
     this.shadowRoot.innerHTML = `
     <style>
       .card {
@@ -27,6 +30,11 @@ class UserCard extends HTMLElement {
           <p>${this._user.email}</p>
         </div>
       `;
+
+    const card = this.shadowRoot.querySelector(".card");
+    const cardButton = document.createElement("user-card-button");
+    cardButton.selectedUser = this._user;
+    card.appendChild(cardButton);
   }
 }
 
